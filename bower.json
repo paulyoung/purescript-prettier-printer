@@ -1,5 +1,10 @@
 {
   "name": "purescript-prettier-printer",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/paulyoung/purescript-prettier-printer.git"
+  },
   "ignore": [
     "**/.*",
     "node_modules",
