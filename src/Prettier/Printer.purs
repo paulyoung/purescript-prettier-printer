@@ -102,10 +102,8 @@ be w k (Cons (Tuple i (NEST j x)) z) = be w k  $ (Tuple (i + j) x) : z
 be w k (Cons (Tuple i (TEXT s)) z) = Text s $ be w (k + String.length s) z
 be w k (Cons (Tuple i LINE) z) = Line i $ be w i z
 be w k (Cons (Tuple i (UNION x y)) z) =
-  better w k (be w k $ (Tuple i x) : z) (be w k $ (Tuple i y) : z)
-
-better :: Int -> Int -> Doc -> Doc -> Doc
-better w k x y = if fits (w - k) x then x else y
+  let x' = be w k $ (Tuple i x) : z
+  in if fits (w - k) x' then x' else be w k $ (Tuple i y) : z
 
 fits :: Int -> Doc -> Boolean
 fits w x | w < 0 = false
