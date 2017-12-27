@@ -7,6 +7,7 @@ module Prettier.Printer
   , besideOrBelow
   -- , best
   -- , better
+  , bracket'
   , bracket
   -- , copy
   , fill
@@ -141,8 +142,11 @@ spread = folddoc (<+>)
 stack :: List DOC -> DOC
 stack = folddoc (</>)
 
+bracket' :: Int -> String -> DOC -> String -> DOC
+bracket' i l x r = group $ text l <> nest i (line <> x) <> line <> text r
+
 bracket :: String -> DOC -> String -> DOC
-bracket l x r = group $ text l <> nest 2 (line <> x) <> line <> text r
+bracket = bracket' 2
 
 besideOrBelow :: DOC -> DOC -> DOC
 besideOrBelow x y = x <> (text " " :<|> line) <> y
