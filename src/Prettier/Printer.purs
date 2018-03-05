@@ -111,10 +111,10 @@ be w k (Cons (Tuple i (UNION x y)) z) =
   in if fits (w - k) x' then x' else be w k $ (Tuple i y) : z
 
 fits :: Int -> Doc -> Boolean
-fits w x | w < 0 = false
-fits w Nil = true
+fits w _ | w < 0 = false
+fits _ Nil = true
 fits w (Text s x) = fits (w - String.length s) x
-fits w (Line i x) = true
+fits _ (Line _ _) = true
 
 pretty :: Int -> DOC -> String
 pretty w x = layout $ best w 0 x
