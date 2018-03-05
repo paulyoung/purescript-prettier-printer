@@ -101,10 +101,10 @@ best w k x = be w k $ List.singleton (Tuple 0 x)
 
 be :: Int -> Int -> List (Tuple Int DOC) -> Doc
 be w k List.Nil = Nil
-be w k (Cons (Tuple i NIL) z) = be w k z
+be w k (Cons (Tuple _ NIL) z) = be w k z
 be w k (Cons (Tuple i (APPEND x y)) z) = be w k $ (Tuple i x) : (Tuple i y) : z
-be w k (Cons (Tuple i (NEST j x)) z) = be w k  $ (Tuple (i + j) x) : z
-be w k (Cons (Tuple i (TEXT s)) z) = Text s $ be w (k + String.length s) z
+be w k (Cons (Tuple i (NEST j x)) z) = be w k $ (Tuple (i + j) x) : z
+be w k (Cons (Tuple _ (TEXT s)) z) = Text s $ be w (k + String.length s) z
 be w k (Cons (Tuple i LINE) z) = Line i $ be w i z
 be w k (Cons (Tuple i (UNION x y)) z) =
   let x' = be w k $ (Tuple i x) : z
