@@ -34,6 +34,7 @@ module Prettier.Printer
 
 import Prelude
 
+import Control.Monad.Rec.Class (Step(..), tailRec)
 import Data.Array as Array
 import Data.Foldable (intercalate)
 import Data.List (List(Cons), (:))
@@ -99,16 +100,27 @@ copy i x = intercalate "" $ Array.replicate i x
 best :: Int -> Int -> DOC -> Doc
 best w k x = be w k $ List.singleton (Tuple 0 x)
 
+newtype State a = State
+  { f :: Step (State a) Doc -> Step (State a) Doc
+  , w :: Int
+  , k :: Int
+  , l :: List (Tuple Int DOC)
+  }
+
 be :: Int -> Int -> List (Tuple Int DOC) -> Doc
-be w k List.Nil = Nil
-be w k (Cons (Tuple _ NIL) z) = be w k z
-be w k (Cons (Tuple i (APPEND x y)) z) = be w k $ (Tuple i x) : (Tuple i y) : z
-be w k (Cons (Tuple i (NEST j x)) z) = be w k $ (Tuple (i + j) x) : z
-be w k (Cons (Tuple _ (TEXT s)) z) = Text s $ be w (k + String.length s) z
-be w k (Cons (Tuple i LINE) z) = Line i $ be w i z
-be w k (Cons (Tuple i (UNION x y)) z) =
-  let x' = be w k $ (Tuple i x) : z
-  in if fits (w - k) x' then x' else be w k $ (Tuple i y) : z
+be w0 k0 l0 = tailRec go $ State { f: id, w: w0, k: k0, l: l0 }
+  where
+  go :: forall a. State a -> Step (State a) Doc
+  go (State { f, w, k, l }) = case l of
+    List.Nil -> Done Nil
+    (Cons (Tuple _ NIL) z) -> f $ Loop $ State { f: id, w, k, l: z }
+    (Cons (Tuple i (APPEND x y)) z) -> f $ Loop $ State { f: id, w, k, l: (Tuple i x) : (Tuple i y) : z }
+    (Cons (Tuple i (NEST j x)) z) -> f $ Loop $ State { f: id, w, k, l: (Tuple (i + j) x) : z }
+    (Cons (Tuple _ (TEXT s)) z) -> f $ Loop $ State { f: map (Text s), w, k: (k + String.length s), l: z }
+    (Cons (Tuple i LINE) z) -> f $ Loop $ State { f: map (Line i), w, k: i, l: z }
+    (Cons (Tuple i (UNION x y)) z) -> Done Nil
+      -- let l' = f $ Loop $ State { f: id, w, k, l: (Tuple i x) : z }
+      -- in if fits (w - k) l' then l' else f $ Loop $ State { f: id, w, k, l: (Tuple i y) : z }
 
 fits :: Int -> Doc -> Boolean
 fits w _ | w < 0 = false

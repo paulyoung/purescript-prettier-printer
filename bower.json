@@ -16,7 +16,8 @@
     "purescript-console": "^3.0.0",
     "purescript-lists": "^4.12.0",
     "purescript-tuples": "^4.1.0",
-    "purescript-spec-quickcheck": "^2.0.0"
+    "purescript-spec-quickcheck": "^2.0.0",
+    "purescript-tailrec": "^3.3.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^3.0.0",
