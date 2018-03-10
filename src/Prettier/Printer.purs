@@ -39,6 +39,7 @@ import Data.Array as Array
 import Data.Foldable (intercalate)
 import Data.List (List(Cons), (:))
 import Data.List as List
+import Data.Maybe (Maybe(..))
 import Data.Monoid (class Monoid)
 import Data.String (Pattern(..))
 import Data.String as String
@@ -100,27 +101,44 @@ copy i x = intercalate "" $ Array.replicate i x
 best :: Int -> Int -> DOC -> Doc
 best w k x = be w k $ List.singleton (Tuple 0 x)
 
-newtype State a = State
-  { f :: Step (State a) Doc -> Step (State a) Doc
-  , w :: Int
+newtype State = State
+  { f :: Doc -> Doc
   , k :: Int
   , l :: List (Tuple Int DOC)
+  -- Based on the generated document, should it keep the result or try a new state
+  , next :: Maybe (Tuple (Doc -> Boolean) State)
   }
 
 be :: Int -> Int -> List (Tuple Int DOC) -> Doc
-be w0 k0 l0 = tailRec go $ State { f: id, w: w0, k: k0, l: l0 }
+be w k0 l0 = tailRec go $ State { f: id, k: k0, l: l0, next: Nothing }
   where
-  go :: forall a. State a -> Step (State a) Doc
-  go (State { f, w, k, l }) = case l of
-    List.Nil -> Done Nil
-    (Cons (Tuple _ NIL) z) -> f $ Loop $ State { f: id, w, k, l: z }
-    (Cons (Tuple i (APPEND x y)) z) -> f $ Loop $ State { f: id, w, k, l: (Tuple i x) : (Tuple i y) : z }
-    (Cons (Tuple i (NEST j x)) z) -> f $ Loop $ State { f: id, w, k, l: (Tuple (i + j) x) : z }
-    (Cons (Tuple _ (TEXT s)) z) -> f $ Loop $ State { f: map (Text s), w, k: (k + String.length s), l: z }
-    (Cons (Tuple i LINE) z) -> f $ Loop $ State { f: map (Line i), w, k: i, l: z }
-    (Cons (Tuple i (UNION x y)) z) -> Done Nil
-      -- let l' = f $ Loop $ State { f: id, w, k, l: (Tuple i x) : z }
-      -- in if fits (w - k) l' then l' else f $ Loop $ State { f: id, w, k, l: (Tuple i y) : z }
+  go :: State -> Step State Doc
+  go (State { f, k, l, next }) = case l of
+    List.Nil ->
+      -- obtain the result by running the function on the empty document
+      let res = f Nil in
+      case next of
+        -- if this one fails, continue at the next state
+        Just (Tuple p st) | not p res ->
+          Loop st
+        -- otherwise return what we got
+        _ -> Done res
+    (Cons (Tuple _ NIL) z) -> Loop $
+      State { f, k, l: z, next }
+    (Cons (Tuple i (APPEND x y)) z) -> Loop $
+      State { f, k, l: (Tuple i x) : (Tuple i y) : z, next }
+    (Cons (Tuple i (NEST j x)) z) -> Loop $
+      State { f, k, l: (Tuple (i + j) x) : z, next }
+    (Cons (Tuple _ (TEXT s)) z) -> Loop $
+      State { f: f <<< Text s, k: (k + String.length s), l: z, next }
+    (Cons (Tuple i LINE) z) -> Loop $
+      State { f: f <<< Line i, k: i, l: z, next }
+    (Cons (Tuple i (UNION x y)) z) ->
+      let
+        -- add a continuation that tests whether the previous doc is too long
+        trial = Tuple (fits (w - k)) nextSt
+        nextSt = State { f, k, l: (Tuple i y) : z, next }
+      in  Loop $ State { f, k, l: (Tuple i x) : z, next: Just trial }
 
 fits :: Int -> Doc -> Boolean
 fits w _ | w < 0 = false
