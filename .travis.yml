@@ -1,10 +1,10 @@
 language: node_js
 dist: trusty
 sudo: required
-node_js: 6
+node_js: stable
 install:
   - npm install -g yarn
-  - yarn global add purescript pulp bower purescript-psa
+  - yarn global add purescript@^0.12.0 pulp@^12.3.0 bower purescript-psa@^0.6.0
   - export PATH="$PATH:`yarn global bin`"
   - bower install
 script:

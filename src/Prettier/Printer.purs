@@ -38,7 +38,6 @@ import Data.Array as Array
 import Data.Foldable (intercalate)
 import Data.List (List(Cons), (:))
 import Data.List as List
-import Data.Monoid (class Monoid)
 import Data.String (Pattern(..))
 import Data.String as String
 import Data.Tuple (Tuple(..))
