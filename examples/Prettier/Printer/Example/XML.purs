@@ -2,10 +2,10 @@ module Prettier.Printer.Example.XML where
 
 import Prelude
 
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
 import Data.List (List, (:))
 import Data.List as List
+import Effect (Effect)
+import Effect.Console (log)
 import Prettier.Printer (DOC, bracket, fill, folddoc, nil, pretty, text, words)
 
 -- XML example
@@ -69,5 +69,5 @@ xml =
     : List.Nil
     )
 
-testXML :: forall eff. Int -> Eff (console :: CONSOLE | eff) Unit
+testXML :: Int -> Effect Unit
 testXML w = log $ pretty w (showXML xml)

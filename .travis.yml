@@ -8,7 +8,7 @@ install:
   - export PATH="$PATH:`yarn global bin`"
   - bower install
 script:
-  - pulp test
+  - pulp test --include examples
 after_success:
 - >-
   test $TRAVIS_TAG &&

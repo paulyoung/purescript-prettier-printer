@@ -2,11 +2,11 @@ module Prettier.Printer.Example.Tree where
 
 import Prelude
 
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
 import Data.List (List(Cons), (:))
 import Data.List as List
 import Data.String as String
+import Effect (Effect)
+import Effect.Console (log)
 import Prettier.Printer (DOC, bracket, group, line, nest, nil, pretty, text)
 
 -- Tree example
@@ -55,8 +55,8 @@ tree =
     : List.Nil
     )
 
-testtree :: forall eff. Int -> Eff (console :: CONSOLE | eff) Unit
+testtree :: Int -> Effect Unit
 testtree w = log $ pretty w (showTree tree)
 
-testtree' :: forall eff. Int -> Eff (console :: CONSOLE | eff) Unit
+testtree' :: Int -> Effect Unit
 testtree' w = log $ pretty w (showTree' tree)
