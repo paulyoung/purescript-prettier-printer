@@ -3,7 +3,6 @@
 /.pulp-cache/
 /output/
 /generated-docs/
-/.psc-package/
 /.psc*
-/.purs*
+/.spago*
 /.psa*
