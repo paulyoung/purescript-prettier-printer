@@ -3,7 +3,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/paulyoung/purescript-prettier-printer.git"
+    "url": "https://github.com/paulyoung/purescript-prettier-printer.git"
   },
   "ignore": [
     "**/.*",
@@ -12,15 +12,15 @@
     "output"
   ],
   "dependencies": {
-    "purescript-prelude": "^4.0.0",
-    "purescript-console": "^4.0.0",
-    "purescript-lists": "^5.0.0",
-    "purescript-tuples": "^5.0.0"
+    "purescript-prelude": "^5.0.0",
+    "purescript-console": "^5.0.0",
+    "purescript-lists": "^6.0.0",
+    "purescript-tuples": "^6.0.0"
   },
   "devDependencies": {
-    "purescript-quickcheck": "^5.0.0",
-    "purescript-psci-support": "^4.0.0",
-    "purescript-spec": "^3.0.0",
-    "purescript-spec-discovery": "owickstrom/purescript-spec-discovery#a1a8dfd5fadb3f00199d68d20af4bbf56a048c6e"
+    "purescript-quickcheck": "^7.0.0",
+    "purescript-psci-support": "^5.0.0",
+    "purescript-spec": "^5.0.0",
+    "purescript-spec-discovery": "^6.0.0"
   }
 }

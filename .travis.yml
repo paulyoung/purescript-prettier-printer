@@ -4,13 +4,13 @@ sudo: required
 node_js: stable
 install:
   - npm install -g yarn
-  - yarn global add purescript@^0.12.0 pulp@^12.3.0 bower purescript-psa@^0.6.0
+  - yarn global add purescript@^0.14.0 pulp@^15.0.0 bower purescript-psa@^0.8.2
   - export PATH="$PATH:`yarn global bin`"
   - bower install
 script:
   - pulp test --include examples
 after_success:
-- >-
-  test $TRAVIS_TAG &&
-  echo $GITHUB_TOKEN | pulp login &&
-  echo y | pulp publish --no-push
+  - >-
+    test $TRAVIS_TAG &&
+    echo $GITHUB_TOKEN | pulp login &&
+    echo y | pulp publish --no-push
